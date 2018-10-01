@@ -14,7 +14,7 @@
 
     <package name="SQ" namespace="/" extends="json-default">
         <action name="StudentQuery" class="StudentQuery">
-            <result type="json">
+            <result name="success" type="json">
                 <param name="root">result</param>
             </result>
         </action>

@@ -23,10 +23,6 @@ public class StudentQuery extends ActionSupport {
     private String value;
     private JSONArray result = new JSONArray();
 
-    public static String[][] getData() {
-        return data;
-    }
-
     public String getMenu() {
         return menu;
     }
@@ -61,6 +57,8 @@ public class StudentQuery extends ActionSupport {
 
     @Override
     public String execute() throws Exception {
+
+        System.out.println(menu+ " " + range + " " + value + " ====");
 
         if (menu.equals("age")) {
             if (range.equals("greater")) {

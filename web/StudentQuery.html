@@ -3,46 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>学生查询</title>
-    <script src="./Util/jquery-3.2.1.js" type="text/javascript" charset="utf-8"></script>
 
-    <script type="text/javascript">
-        //查询
-        $(function() {
-            $("#search").click(function() {
-                var formData = $("#SearchBar").serialize();
-                console.log(formData);
-
-                $.ajax({
-                    type : "post",
-                    url : '/SQ/StudentQuery.action',
-                    data : formData,
-                    success : function(d) {
-                        alert(d);
-                    },
-                    error : function(d) {
-                        alert("errors!!!"+d.responseText);
-                    }
-                });
-            });
-        });
-
-        $(document).ready(function () {
-            $("#menu").bind("change",function(){
-                console.log(this.value);
-                if(this.value=='sno'){
-                    $("#range").html("<option id ='greater'>大于</option>" +
-                        "<option value ='gore'>大于等于</option>" +
-                        "<option value='equal'>等于</option>" +
-                        "<option value='sore'>小于等于</option>" +
-                        "<option value='smaller'>小于</option>")
-                }
-                else{
-                    $("#range").html(" <option value ='include'>包含</option>" +
-                        "<option value='equal'>等于</option>")
-                }
-            });
-        });
-    </script>
 </head>
 
 <body>
@@ -60,7 +21,7 @@
             <option value ="equal">等于</option>
         </select>
 
-        <input size="30" name="value">
+        <input size="30" name="value" value="王">
 
         <button id="search">查询</button>
     </form>
@@ -85,4 +46,49 @@
     </form>
 
 </body>
+
+
+<script src="./Util/jquery-3.2.1.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript">
+    //查询
+    $(function() {
+        $("#search").click(function(e) {
+            var formData = $("#SearchBar").serialize();
+            e.preventDefault();
+            console.log(formData);
+
+            $.ajax({
+                type : "post",
+                url : '/SQ/StudentQuery.action',
+                data : formData,
+                dataType:"json",
+                success : function(d) {
+                    console.log("成功",d);
+                },
+                error : function(d) {
+                    console.log("异常",d);
+                    alert("异常"+JSON.stringify(d))
+                }
+            });
+        });
+    });
+
+    $(document).ready(function () {
+        $("#menu").bind("change",function(){
+            console.log(this.value);
+            if(this.value=='sno'){
+                $("#range").html("<option id ='greater'>大于</option>" +
+                    "<option value ='gore'>大于等于</option>" +
+                    "<option value='equal'>等于</option>" +
+                    "<option value='sore'>小于等于</option>" +
+                    "<option value='smaller'>小于</option>")
+            }
+            else{
+                $("#range").html(" <option value ='include'>包含</option>" +
+                    "<option value='equal'>等于</option>")
+            }
+        });
+    });
+</script>
 </html>
