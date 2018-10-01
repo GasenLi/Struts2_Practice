@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="./Util/jquery-3.2.1.js" type="text/javascript" charset="utf-8"></script>
+    <title>Demo</title>
+
+    <script type="text/javascript">
+        $(function() {
+            $("#btnAjax").click(function() {
+                $.ajax({
+                    type : "post",
+                    url : '/SQ/Hello',
+                    success : function(d) {
+                        window.location.href='Hello.html';
+                    },
+                    error : function(d) {
+                        alert("errors!!!"+d.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+
+</head>
+<body>
+    click:
+    <input type="button" id="btnAjax" value="Ajax调用" />
+</body>
+</html>
