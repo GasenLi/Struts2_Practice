@@ -6,17 +6,38 @@
 
 <struts>
     <package name="Hello" namespace="/" extends="struts-default">
-        <action name="Hello" class="Hello">
+        <action name="Hello" class="Action.Hello">
             <result name="success">Hello.html</result>
         </action>
 
     </package>
 
     <package name="SQ" namespace="/" extends="json-default">
-        <action name="StudentQuery" class="StudentQuery">
+        <!--声明拦截器-->
+        <interceptors>
+            <interceptor name="Login" class="Intercepter.LoginIntercepter"></interceptor>
+
+            <interceptor-stack name="SQsatck">
+                <interceptor-ref name="defaultStack"></interceptor-ref>
+                <interceptor-ref name="Login"></interceptor-ref>
+            </interceptor-stack>
+        </interceptors>
+
+        <!--动作-->
+        <action name="Login" class="Action.Login">
             <result name="success" type="json">
                 <param name="root">result</param>
             </result>
+        </action>
+
+        <action name="StudentQuery" class="Action.StudentQuery">
+            <result name="success" type="json">
+                <param name="root">result</param>
+            </result>
+
+            <result name="error"></result>
+
+            <interceptor-ref name="SQsatck"></interceptor-ref>
         </action>
 
     </package>

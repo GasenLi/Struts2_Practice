@@ -63,6 +63,15 @@
 <script src="./Util/jquery-3.2.1.js" type="text/javascript" charset="utf-8"></script>
 
 <script type="text/javascript">
+    //校验是否登陆
+    function checkIsLogged(d) {
+        var info = d['info'];
+        console.log(info);
+        if (info == 'notLoggedIn'){
+            self.location='Login.html';
+        }
+    }
+
     //查询
     function search(e) {
         var formData = $("#SearchBar").serialize();
@@ -75,7 +84,9 @@
             dataType:"json",
             success : function(d) {
                 console.log("成功",d);
+                checkIsLogged(d);
 
+                //动态生成表单
                 var tbody = $("#tbody");
                 tbody.html("");
                 for(var i=0;i<d.length;i++){
