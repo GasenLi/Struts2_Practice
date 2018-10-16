@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <title>学生查询</title>
 
+    <link rel="stylesheet" type="text/css" href="Util/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="Util/sweetalert.css"/>
+
+    <script src="./Util/jquery-3.2.1.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="Util/sweetalert-dev.js"></script>
+    <script type="text/javascript" src="Util/bootstrap.min.js"></script>
+
 </head>
 
 <body>
@@ -43,6 +50,24 @@
                 </tr>
             </tbody>
         </table>
+
+        <button style="margin-top:2%; margin-left: 48%" id="download" class="btn btn-default">保存查询结果</button>
+        <a style="display: none" id="getFile" href="/SQ/FileDownload.action?filename=result.txt"></a>
+
+        <div id="upload" >
+            <h2 style="margin-top:4%; margin-left: 48%">文件上传</h2>
+
+            <form id="uploadForm" enctype="multipart/form-data">
+                <div class="input-group input-group-lg" style="margin-left: 25%; margin-right: 22%;">
+                    <span class="input-group-addon" id="basic-addon1">请选择文件上传</span>
+                    <input class="form-control" placeholder="No File" aria-describedby="basic-addon1" multiple="multiple" name="uploadFile" id="uploadFile" type="file">
+                </div>
+            </form>
+
+            <button id="uploadConfirm" style="margin-top:2%; margin-left: 48%" class="btn btn-default">确认上传</button>
+        </div>
+
+
     </div>
 </body>
 
@@ -58,23 +83,100 @@
     }
 
 
+
 </style>
 
-<script src="./Util/jquery-3.2.1.js" type="text/javascript" charset="utf-8"></script>
+
 
 <script type="text/javascript">
-    //校验是否登陆
+
+    //下载事件
+    $("#download").click(function(e) {
+        e.preventDefault();
+        search('&isSaved=true');
+        $('#getFile').click();
+
+    });
+
+    //下载
+    function download() {
+        $.ajax({
+            type: "POST",
+            url: "/SQ/FileDownload.action?filename=result.txt",
+            dataType: "json",
+            success: function (d) {
+
+            },
+            error : function(d) {
+                showWrong("服务器错误，请联系管理员！")
+            }
+        });
+    }
+
+    function showWrong(info) {
+        swal({
+            title: info,
+            text: "5秒后自动消失",
+            timer: 5000,
+            type:"error",
+            showConfirmButton: true
+        });
+    }
+
+    function showCorrect(info) {
+        swal({
+            title: info,
+            text: "5秒后自动消失",
+            timer: 5000,
+            type:"success",
+            showConfirmButton: true
+        });
+    }
+
+    //上传事件
+    $("#uploadConfirm").click(function() {
+        var uploadFile = $("#uploadFile");
+        console.log("uploadFile : " + uploadFile[0].value);
+        if(uploadFile[0].value == ""){
+            showWrong("请先选择文件！")
+            return;
+        }
+
+        var formData = new FormData($("#uploadForm")[0]);
+        $.ajax({
+            type: "POST",
+            url: "/SQ/FileUpload.action",
+            data : formData,
+            cache: false,
+            processData: false,  //必填
+            contentType: false,  //必填
+            dataType: "json",
+            success: function (d) {
+                console.log(d);
+                if(d['info'] == "uploadSuccess"){
+                    showCorrect("上传成功！");
+                }
+            },
+            error : function(d) {
+                showWrong("服务器错误，请联系管理员！")
+            }
+        });
+
+    });
+
+        //校验是否登陆
     function checkIsLogged(d) {
         var info = d['info'];
-        console.log(info);
+        console.log("--登录校验---： "+info);
         if (info == 'notLoggedIn'){
             self.location='Login.html';
         }
     }
 
     //查询
-    function search(e) {
+    function search(isSaved) {
         var formData = $("#SearchBar").serialize();
+        formData += isSaved;
         console.log(formData);
 
         $.ajax({
@@ -102,16 +204,17 @@
             }
         });
     }
-    
+
+    //普通搜索事件
     $(function() {
         $("#search").click(function(e) {
             e.preventDefault();
-            search();
+            search('&isSaved=false');
         });
     });
 
     $(document).ready(function () {
-        search();
+        search('&isSaved=false');
 
         $("#menu").bind("change",function(){
             console.log(this.value);

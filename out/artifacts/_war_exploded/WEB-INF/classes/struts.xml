@@ -35,9 +35,28 @@
                 <param name="root">result</param>
             </result>
 
-            <result name="error"></result>
+            <result name="error" type="json">
+                <param name="root">resultObj</param>
+            </result>
 
             <interceptor-ref name="SQsatck"></interceptor-ref>
+        </action>
+
+        <action name="FileUpload" class="Action.FileUpload">
+            <result name="success" type="json">
+                <param name="root">result</param>
+            </result>
+        </action>
+
+        <action name="FileDownload" class="Action.FileDownload">
+            <result name="success" type="stream">
+                <!--文件类型-->
+                <param name="contentType">${contentType}</param>
+                <!--文件名-->
+                <param name="contentDisposition">attachment;filename = ${filename}</param>
+                <!--输入流-->
+                <param name="inputName">downloadFile</param>
+            </result>
         </action>
 
     </package>

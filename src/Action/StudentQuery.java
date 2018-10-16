@@ -5,6 +5,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.struts2.json.annotations.JSON;
 
+import java.io.*;
 import java.util.ArrayList;
 
 public class StudentQuery extends ActionSupport {
@@ -23,7 +24,25 @@ public class StudentQuery extends ActionSupport {
     private String menu;
     private String range;
     private String value;
+    private String isSaved;
     private JSONArray result = new JSONArray();
+    private JSONObject resultObj = new JSONObject();
+
+    public JSONObject getResultObj() {
+        return resultObj;
+    }
+
+    public void setResultObj(JSONObject resultObj) {
+        this.resultObj = resultObj;
+    }
+
+    public String getIsSaved() {
+        return isSaved;
+    }
+
+    public void setIsSaved(String isSaved) {
+        this.isSaved = isSaved;
+    }
 
     public String getMenu() {
         return menu;
@@ -114,7 +133,22 @@ public class StudentQuery extends ActionSupport {
                 }
             }
         }
-        
+
+        if(isSaved.equals("true")){
+            createFile();
+        }
+
         return "success";
+    }
+
+    public void createFile() throws IOException {
+        File outFile = new File("E:\\workplace\\Java EE\\实验一\\下载文件\\result.txt");
+        FileWriter writer = new FileWriter(outFile);
+
+        for(int i=0 ;i<result.size();i++){
+            writer.write(result.get(i).toString()+"\n");
+        }
+
+        writer.close();
     }
 }

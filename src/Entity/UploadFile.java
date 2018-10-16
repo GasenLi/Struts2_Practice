@@ -5,35 +5,35 @@ import java.io.File;
 public class UploadFile {
     private static final long serialVersionUID = 1L;
 
-    private File file;
-    private String fileFileName;
-    private String fileContentType;
+    private File uploadFile;
+    private String uploadFileFileName;
+    private String uploadFileContentType;
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
     }
 
-    public File getFile() {
-        return file;
+    public File getUploadFile() {
+        return uploadFile;
     }
 
-    public void setFile(File file) {
-        this.file = file;
+    public void setUploadFile(File uploadFile) {
+        this.uploadFile = uploadFile;
     }
 
-    public String getFileFileName() {
-        return fileFileName;
+    public String getUploadFileFileName() {
+        return uploadFileFileName;
     }
 
-    public void setFileFileName(String fileFileName) {
-        this.fileFileName = fileFileName;
+    public void setUploadFileFileName(String uploadFileFileName) {
+        this.uploadFileFileName = uploadFileFileName;
     }
 
-    public String getFileContentType() {
-        return fileContentType;
+    public String getUploadFileContentType() {
+        return uploadFileContentType;
     }
 
-    public void setFileContentType(String fileContentType) {
-        this.fileContentType = fileContentType;
+    public void setUploadFileContentType(String uploadFileContentType) {
+        this.uploadFileContentType = uploadFileContentType;
     }
 }

@@ -8,6 +8,8 @@ import org.apache.struts2.ServletActionContext;
 
 import javax.servlet.http.HttpServletResponse;
 
+import java.lang.reflect.Method;
+
 import static com.opensymphony.xwork2.Action.ERROR;
 
 public class LoginIntercepter extends AbstractInterceptor{
@@ -18,22 +20,14 @@ public class LoginIntercepter extends AbstractInterceptor{
         Object user = actionContext.getSession().get("user");
 
         if(user != null){
-
             return actionInvocation.invoke();
         }else {
-            //            actionContext.put("info","notLoggedIn");
-
             JSONObject result = new JSONObject();
             result.put("info","notLoggedIn");
 
-            //返回结果
-            HttpServletResponse response = ServletActionContext.getResponse();
-            response.setContentType("text/html;charset=UTF-8");
-            //设置不使用缓存
-            response.setHeader("Cache-Control","no-cache");
-            response.getWriter().write(result+"");
-            response.getWriter().flush();
-            response.getWriter().close();
+            //将action的resultObj设值
+            Method method = actionInvocation.getProxy().getAction().getClass().getMethod("setResultObj",JSONObject.class);
+            method.invoke(actionInvocation.getProxy().getAction(), result);
 
             return ERROR;
         }
