@@ -94,7 +94,8 @@
     $("#download").click(function(e) {
         e.preventDefault();
         search('&isSaved=true');
-        $('#getFile').submit();
+        window.location.href = '/SQ/FileDownload.action?filename=result.txt';
+
     });
 
     //下载

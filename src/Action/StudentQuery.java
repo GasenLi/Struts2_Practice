@@ -143,7 +143,7 @@ public class StudentQuery extends ActionSupport {
 
     public void createFile() throws IOException {
         File outFile = new File("E:\\workplace\\Java EE\\实验一\\下载文件\\result.txt");
-        FileWriter writer = new FileWriter(outFile);
+        BufferedWriter writer = new BufferedWriter (new OutputStreamWriter (new FileOutputStream (outFile),"UTF-8"));
 
         for(int i=0 ;i<result.size();i++){
             writer.write(result.get(i).toString()+"\n");

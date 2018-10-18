@@ -94,7 +94,7 @@
     $("#download").click(function(e) {
         e.preventDefault();
         search('&isSaved=true');
-        $('#getFile').click();
+        window.location.href = '/SQ/FileDownload.action?filename=result.txt';
 
     });
 
