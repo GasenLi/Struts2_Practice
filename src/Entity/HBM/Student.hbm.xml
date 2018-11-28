@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <!-- 标识一个类的xml映射,name为类名,table为表名 -->
+    <class name="Entity.Student" table="student">
+        <!-- 主键的设置,generator标识主键生成方式,因为native便于数据库的移植所以.嘿嘿!你懂的 -->
+        <id name="studentID" column="StudentID" type="java.lang.String">
+            <generator class="assigned"/>
+        </id>
+
+        <property name="classID" column="ClassID" type="string"/>
+        <property name="studentAge" column="StudentAge" type="int"/>
+        <property name="studentName" column="StudentName" type="string"/>
+    </class>
+</hibernate-mapping>
+
