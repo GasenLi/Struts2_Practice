@@ -2,9 +2,217 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+    <title>班级与学生信息管理</title>
 
+    <link rel="stylesheet" type="text/css" href="Util/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="Util/sweetalert.css"/>
+
+    <script src="./Util/jquery-3.2.1.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="Util/sweetalert-dev.js"></script>
+    <script type="text/javascript" src="Util/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+<div id="main" >
+    <form id="SearchBar" style="margin-bottom: 20px; margin-left: 38%; margin-top: 11%">
+        <span>属性</span>
+
+        <select id="menu" name="menu">
+            <option value ="name">姓名</option>
+            <option value ="age">年龄</option>
+            <option value="sno">学号</option>
+        </select>
+
+        <select id="range" name="range">
+            <option value ="include">包含</option>
+            <option value ="equal">等于</option>
+        </select>
+
+        <input size="30" name="value" value="王">
+
+        <button id="search">查询</button>
+    </form>
+
+    <table id="result" border="2" width="700" style="margin-left: 34%">
+        <thead>
+        <tr style="background-color:#000000; color:#FFFFFF">
+            <th class="tableLeft">学号</th>
+            <th class="tableLeft">姓名</th>
+            <th class="tableRight">年龄</th>
+        </tr>
+        </thead>
+        <tbody id="tbody">
+        <tr>
+            <th>1</th>
+            <th>2</th>
+            <th>3</th>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
 </body>
+
+<style>
+    .tableCenter {
+        text-align: center;
+    }
+    .tableLeft{
+        text-align: left;
+    }
+    .tableRight {
+        text-align: right;
+    }
+
+
+
+</style>
+
+
+
+<script type="text/javascript">
+
+    //下载事件
+    $("#download").click(function(e) {
+        e.preventDefault();
+        search('&isSaved=true');
+        window.location.href = '/SQ/FileDownload.action?filename=result.txt';
+
+    });
+
+    //下载
+    function download() {
+        $.ajax({
+            type: "POST",
+            url: "/SQ/FileDownload.action?filename=result.txt",
+            dataType: "json",
+            success: function (d) {
+
+            },
+            error : function(d) {
+                showWrong("服务器错误，请联系管理员！")
+            }
+        });
+    }
+
+    function showWrong(info) {
+        swal({
+            title: info,
+            text: "5秒后自动消失",
+            timer: 5000,
+            type:"error",
+            showConfirmButton: true
+        });
+    }
+
+    function showCorrect(info) {
+        swal({
+            title: info,
+            text: "5秒后自动消失",
+            timer: 5000,
+            type:"success",
+            showConfirmButton: true
+        });
+    }
+
+    //上传事件
+    $("#uploadConfirm").click(function() {
+        var uploadFile = $("#uploadFile");
+        console.log("uploadFile : " + uploadFile[0].value);
+        if(uploadFile[0].value == ""){
+            showWrong("请先选择文件！")
+            return;
+        }
+
+        var formData = new FormData($("#uploadForm")[0]);
+        $.ajax({
+            type: "POST",
+            url: "/SQ/FileUpload.action",
+            data : formData,
+            cache: false,
+            processData: false,  //必填
+            contentType: false,  //必填
+            dataType: "json",
+            success: function (d) {
+                console.log(d);
+                if(d['info'] == "uploadSuccess"){
+                    showCorrect("上传成功！");
+                }
+            },
+            error : function(d) {
+                showWrong("服务器错误，请联系管理员！")
+            }
+        });
+
+    });
+
+    //校验是否登陆
+    function checkIsLogged(d) {
+        var info = d['info'];
+        console.log("--登录校验---： "+info);
+        if (info == 'notLoggedIn'){
+            self.location='Login.html';
+        }
+    }
+
+    //查询
+    function search(isSaved) {
+        var formData = $("#SearchBar").serialize();
+        formData += isSaved;
+        console.log(formData);
+
+        $.ajax({
+            type : "post",
+            url : '/SQ/StudentQuery.action',
+            data : formData,
+            dataType:"json",
+            success : function(d) {
+                console.log("成功",d);
+                checkIsLogged(d);
+
+                //动态生成表单
+                var tbody = $("#tbody");
+                tbody.html("");
+                for(var i=0;i<d.length;i++){
+                    tbody.append("<tr> <th class='tableLeft'>"+ d[i][0] +"</th> <th class='tableLeft'>"+ d[i][1] +"</th> <th class='tableRight'>"+ d[i][2] +"</th> </tr>");
+                }
+
+                tbody.append("<tr> <th colspan='3'> 共"+ d.length +"人</th> </tr>");
+
+            },
+            error : function(d) {
+                console.log("异常",d);
+                alert("异常"+JSON.stringify(d))
+            }
+        });
+    }
+
+    //普通搜索事件
+    $(function() {
+        $("#search").click(function(e) {
+            e.preventDefault();
+            search('&isSaved=false');
+        });
+    });
+
+    $(document).ready(function () {
+        search('&isSaved=false');
+
+        $("#menu").bind("change",function(){
+            console.log(this.value);
+            if(this.value=='age'){
+                $("#range").html("<option value ='greater'>大于</option>" +
+                    "<option value ='gore'>大于等于</option>" +
+                    "<option value='equal'>等于</option>" +
+                    "<option value='sore'>小于等于</option>" +
+                    "<option value='smaller'>小于</option>")
+            }
+            else{
+                $("#range").html(" <option value ='include'>包含</option>" +
+                    "<option value='equal'>等于</option>")
+            }
+        });
+    });
+</script>
 </html>

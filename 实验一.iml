@@ -41,5 +41,6 @@
     <orderEntry type="library" name="JavaJSON" level="application" />
     <orderEntry type="library" name="Hibernate 5.3.6-5.3.6" level="application" />
     <orderEntry type="library" name="Struts2" level="application" />
+    <orderEntry type="library" name="MySQL 5.1.37" level="application" />
   </component>
 </module>

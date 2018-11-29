@@ -30,6 +30,14 @@
             </result>
         </action>
 
+        <action name="StudentManage" class="Action.StudentManage">
+            <result name="success" type="json">
+                <param name="root">result</param>
+            </result>
+
+            <interceptor-ref name="SQsatck"></interceptor-ref>
+        </action>
+
         <action name="StudentQuery" class="Action.StudentQuery">
             <result name="success" type="json">
                 <param name="root">result</param>
