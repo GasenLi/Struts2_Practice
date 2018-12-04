@@ -38,6 +38,14 @@
             <interceptor-ref name="SQsatck"></interceptor-ref>
         </action>
 
+        <action name="ClassManage" class="Action.ClassManage">
+            <result name="success" type="json">
+                <param name="root">result</param>
+            </result>
+
+            <interceptor-ref name="SQsatck"></interceptor-ref>
+        </action>
+
         <action name="StudentQuery" class="Action.StudentQuery">
             <result name="success" type="json">
                 <param name="root">result</param>

@@ -1,6 +1,7 @@
 package Action;
 
 import Dao.BaseDao;
+import Entity.Class;
 import Entity.Student;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ModelDriven;
@@ -83,8 +84,14 @@ public class StudentManage extends ActionSupport implements ModelDriven<Student>
         String optionResult = null;
 
         switch (option){
-            case "insert": optionResult = baseDao.insertObj(student);break;
-            case "delete": optionResult = baseDao.delete(student, student.getStudentID());break;
+            case "insert": optionResult = baseDao.insertObj(student);
+                            Class c1 = baseDao.session.get(Class.class,student.getClassID());
+                            c1.setClassStuNum(c1.getClassStuNum()+1);
+                            baseDao.updateObj(c1);break;
+            case "delete": optionResult = baseDao.delete(student, student.getStudentID());
+                            Class c2 = baseDao.session.get(Class.class,student.getClassID());
+                            c2.setClassStuNum(c2.getClassStuNum()-1);
+                            baseDao.updateObj(c2);break;
             case "search": List<Object> searchResults = search();
                            convertListToJson(searchResults);break;
             case "update": optionResult = baseDao.updateObj(student);break;
@@ -97,6 +104,7 @@ public class StudentManage extends ActionSupport implements ModelDriven<Student>
             result.add(jsonObj);
         }
 
+        baseDao.over();
         return SUCCESS;
     }
 

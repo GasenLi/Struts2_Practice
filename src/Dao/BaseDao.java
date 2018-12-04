@@ -11,12 +11,11 @@ import java.util.List;
 
 public class BaseDao {
     private static Configuration configuration = new Configuration().configure();
-    private SessionFactory sessionFactory;
-    private Session session;
+    private static SessionFactory sessionFactory = configuration.buildSessionFactory();
+    public Session session;
     private Transaction transaction;
 
     public BaseDao(){
-        sessionFactory = configuration.buildSessionFactory();
         session = sessionFactory.openSession();
         transaction = session.beginTransaction();
     }
@@ -24,21 +23,18 @@ public class BaseDao {
     public String updateObj(Object o){
         session.update(o);
 
-        over();
         return "true";
     }
 
     public String insertObj(Object o){
         session.save(o);
 
-        over();
         return "true";
     }
 
-    public Object searchObjByID(Object o, String id){
-        o = session.get(o.getClass(), id);
+    public Object searchObjByID(Class c, String id){
+        Object o = session.get(c, id);
 
-        over();
         return o;
     }
 
@@ -47,7 +43,6 @@ public class BaseDao {
         o = session.get(o.getClass(), id);
         session.delete(o);
 
-        over();
         return "true";
     }
 
@@ -56,15 +51,13 @@ public class BaseDao {
 
         List<Object> objectList = query.list();
 
-        over();
         return  objectList;
     }
 
-    private void over(){
+    public void over(){
         transaction.commit();
 
         session.close();
-        sessionFactory.close();
     }
 
     public static void main(String[] args) throws InstantiationException, IllegalAccessException {
