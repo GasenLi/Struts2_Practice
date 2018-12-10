@@ -15,8 +15,36 @@
 
 <body>
 <div id="main" >
-    <form id="SearchBar" style="margin-bottom: 20px; margin-left: 38%; margin-top: 11%">
+
+    <table id="classResult" border="2" width="700" style="margin-left: 34%; margin-top: 5%">
+        <thead>
+        <tr style="background-color:#000000; color:#FFFFFF">
+            <th class="tableLeft">ID</th>
+            <th class="tableLeft">编号</th>
+            <th class="tableR">操作</th>
+        </tr>
+        </thead>
+        <tbody id="classTbody">
+        <tr>
+            <th>1</th>
+            <th>2</th>
+            <th><button>编辑</button> <button>删除</button></th>
+        </tr>
+        </tbody>
+    </table>
+
+    <form id="AddClassBar" style="margin-bottom: 20px; margin-left: 42%; margin-top: 1%">
+        <span>班级ID：</span><input name="classID" size="15">
+        <button id="addClass">添加</button>
+    </form>
+
+    <form id="SearchBar" style="margin-bottom: 20px; margin-left: 33%; margin-top: 11%">
         <span>属性</span>
+
+        <span>班级</span>
+        <select id="classID" name="classID">
+            <option value ="116030804">116030804</option>
+        </select>
 
         <select id="menu" name="menu">
             <option value ="name">姓名</option>
@@ -34,12 +62,15 @@
         <button id="search">查询</button>
     </form>
 
+
     <table id="result" border="2" width="700" style="margin-left: 34%">
         <thead>
         <tr style="background-color:#000000; color:#FFFFFF">
+            <th class="tableLeft">班级</th>
             <th class="tableLeft">学号</th>
             <th class="tableLeft">姓名</th>
-            <th class="tableRight">年龄</th>
+            <th class="tableLeft">年龄</th>
+            <th class="tableLeft">操作</th>
         </tr>
         </thead>
         <tbody id="tbody">
@@ -47,9 +78,17 @@
             <th>1</th>
             <th>2</th>
             <th>3</th>
+            <th>4</th>
+            <th><button>编辑</button> <button>删除</button></th>
         </tr>
         </tbody>
     </table>
+
+    <form id="AddStuentBar" style="margin-bottom: 20px; margin-left: 30%; margin-top: 1%">
+        <span>班级ID：</span><input name="classID" size="15"> <span>学号：</span><input name="studentID" size="15">
+        <span>姓名：</span><input name="studentName" size="10"> <span>年龄：</span><input name="studentAge" size="10">
+        <button id="addStudent">添加</button>
+    </form>
 
 </div>
 </body>
@@ -64,37 +103,11 @@
     .tableRight {
         text-align: right;
     }
-
-
-
 </style>
 
 
 
 <script type="text/javascript">
-
-    //下载事件
-    $("#download").click(function(e) {
-        e.preventDefault();
-        search('&isSaved=true');
-        window.location.href = '/SQ/FileDownload.action?filename=result.txt';
-
-    });
-
-    //下载
-    function download() {
-        $.ajax({
-            type: "POST",
-            url: "/SQ/FileDownload.action?filename=result.txt",
-            dataType: "json",
-            success: function (d) {
-
-            },
-            error : function(d) {
-                showWrong("服务器错误，请联系管理员！")
-            }
-        });
-    }
 
     function showWrong(info) {
         swal({
@@ -116,37 +129,6 @@
         });
     }
 
-    //上传事件
-    $("#uploadConfirm").click(function() {
-        var uploadFile = $("#uploadFile");
-        console.log("uploadFile : " + uploadFile[0].value);
-        if(uploadFile[0].value == ""){
-            showWrong("请先选择文件！")
-            return;
-        }
-
-        var formData = new FormData($("#uploadForm")[0]);
-        $.ajax({
-            type: "POST",
-            url: "/SQ/FileUpload.action",
-            data : formData,
-            cache: false,
-            processData: false,  //必填
-            contentType: false,  //必填
-            dataType: "json",
-            success: function (d) {
-                console.log(d);
-                if(d['info'] == "uploadSuccess"){
-                    showCorrect("上传成功！");
-                }
-            },
-            error : function(d) {
-                showWrong("服务器错误，请联系管理员！")
-            }
-        });
-
-    });
-
     //校验是否登陆
     function checkIsLogged(d) {
         var info = d['info'];
@@ -156,15 +138,85 @@
         }
     }
 
-    //查询
-    function search(isSaved) {
-        var formData = $("#SearchBar").serialize();
-        formData += isSaved;
+    //更新班级菜单
+    function updateClassMenu(classIDs) {
+        var classIDMenu = $("#classID");
+        classIDMenu.html("");
+
+        for(var i=0; i<classIDs.length; i++){
+            classIDMenu.append("<option value ='" + classIDs[i] +"'> "+ classIDs[i] +"</option>");
+        }
+    }
+
+    //添加学生
+    function addStudent() {
+        var formData = $("#AddStuentBar").serialize();
+        formData+="&option=insert";
         console.log(formData);
 
         $.ajax({
             type : "post",
-            url : '/SQ/StudentQuery.action',
+            url : '/SQ/StudentManage.action',
+            data : formData,
+            dataType:"json",
+            success : function(d) {
+                console.log("成功",d);
+                checkIsLogged(d);
+
+                if(d[0]['optionResult'] == "true"){
+                    showCorrect("添加学生成功！");
+                    classSearch();
+                    search();
+                }else {
+                    showWrong("添加学生失败！");
+                }
+            },
+            error : function(d) {
+                console.log("异常",d);
+                alert("异常"+JSON.stringify(d))
+            }
+        });
+    }
+
+    //添加班级
+    function addClass() {
+        var formData = $("#AddClassBar").serialize();
+        formData+="&option=insert";
+        console.log(formData);
+
+        $.ajax({
+            type : "post",
+            url : '/SQ/ClassManage.action',
+            data : formData,
+            dataType:"json",
+            success : function(d) {
+                console.log("成功",d);
+                checkIsLogged(d);
+
+                if(d[0]['optionResult'] == "true"){
+                    showCorrect("添加班级成功！");
+                    classSearch();
+                }else {
+                    showWrong("添加班级失败！");
+                }
+
+            },
+            error : function(d) {
+                console.log("异常",d);
+                alert("异常"+JSON.stringify(d))
+            }
+        });
+    }
+
+    //学生查询
+    function search() {
+        var formData = $("#SearchBar").serialize();
+        formData+="&option=search";
+        console.log(formData);
+
+        $.ajax({
+            type : "post",
+            url : '/SQ/StudentManage.action',
             data : formData,
             dataType:"json",
             success : function(d) {
@@ -175,10 +227,12 @@
                 var tbody = $("#tbody");
                 tbody.html("");
                 for(var i=0;i<d.length;i++){
-                    tbody.append("<tr> <th class='tableLeft'>"+ d[i][0] +"</th> <th class='tableLeft'>"+ d[i][1] +"</th> <th class='tableRight'>"+ d[i][2] +"</th> </tr>");
+                    tbody.append("<tr> <th class='tableLeft'>"+ d[i]['classID'] +"</th> <th class='tableLeft'>"+ d[i]['studentID'] +
+                        "</th> <th class='tableLeft'>"+ d[i]['studentName'] +"</th>  <th class='tableRight'>"+ d[i]['studentAge'] +
+                        "</th> <th><button>编辑</button> <button>删除</button></th>  </tr>");
                 }
 
-                tbody.append("<tr> <th colspan='3'> 共"+ d.length +"人</th> </tr>");
+                tbody.append("<tr> <th colspan='5'> 共"+ d.length +"人</th> </tr>");
 
             },
             error : function(d) {
@@ -188,16 +242,62 @@
         });
     }
 
-    //普通搜索事件
+    //班级查询
+    function classSearch() {
+        $.ajax({
+            type : "post",
+            url : '/SQ/ClassManage.action',
+            data : "option=search",
+            dataType:"json",
+            success : function(d) {
+                console.log("成功",d);
+                checkIsLogged(d);
+                var classIDs = new Array(d.length);
+
+                //动态生成表单
+                var tbody = $("#classTbody");
+                tbody.html("");
+                for(var i=0;i<d.length;i++){
+                    tbody.append("<tr> <th class='tableLeft'>"+ d[i]['classID'] +"</th> <th class='tableLeft'>"+ d[i]['classStuNum'] +
+                        "</th> <th><button>编辑</button> <button>删除</button></th> </tr>");
+
+                    classIDs[i] = d[i]['classID'];
+                }
+
+                tbody.append("<tr> <th colspan='3'> 共"+ d.length +"个班</th> </tr>");
+
+                //更新班级菜单
+                updateClassMenu(classIDs)
+
+            },
+            error : function(d) {
+                console.log("异常",d);
+                alert("异常"+JSON.stringify(d))
+            }
+        });
+    }
+
+    //点击事件
     $(function() {
         $("#search").click(function(e) {
             e.preventDefault();
-            search('&isSaved=false');
+            search();
+        });
+
+        $("#addClass").click(function(e) {
+            e.preventDefault();
+            addClass();
+        });
+
+        $("#addStudent").click(function(e) {
+            e.preventDefault();
+            addStudent();
         });
     });
 
     $(document).ready(function () {
-        search('&isSaved=false');
+        classSearch();
+        search();
 
         $("#menu").bind("change",function(){
             console.log(this.value);
