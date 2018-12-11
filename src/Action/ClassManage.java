@@ -7,6 +7,7 @@ import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ModelDriven;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.hibernate.exception.ConstraintViolationException;
 
 import java.util.List;
 
@@ -51,6 +52,17 @@ public class ClassManage extends ActionSupport implements ModelDriven<Class> {
             case "update": optionResult = baseDao.updateObj(aClass);break;
         }
 
+        try{
+            baseDao.over();
+        }catch (Exception ex){
+            System.out.println("---异常类名--- ： " + ex.getClass().getName());
+            switch (option){
+                case "delete": if(ex.getClass().getName().equals("javax.persistence.PersistenceException")){
+                                     optionResult = "请先移除完这个班级所有的学生！";
+                                };
+            }
+        }
+
         if(!option.equals("search")){
             jsonObj = new JSONObject();
             jsonObj.put("optionResult", optionResult);
@@ -58,7 +70,6 @@ public class ClassManage extends ActionSupport implements ModelDriven<Class> {
             result.add(jsonObj);
         }
 
-        baseDao.over();
         return SUCCESS;
     }
 

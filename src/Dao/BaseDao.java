@@ -55,9 +55,12 @@ public class BaseDao {
     }
 
     public void over(){
-        transaction.commit();
+        try{
+            transaction.commit();
+        }finally {
+            session.close();
+        }
 
-        session.close();
     }
 
     public static void main(String[] args) throws InstantiationException, IllegalAccessException {

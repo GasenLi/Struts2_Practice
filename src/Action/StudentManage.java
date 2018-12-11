@@ -88,8 +88,9 @@ public class StudentManage extends ActionSupport implements ModelDriven<Student>
                             Class c1 = baseDao.session.get(Class.class,student.getClassID());
                             c1.setClassStuNum(c1.getClassStuNum()+1);
                             baseDao.updateObj(c1);break;
-            case "delete": optionResult = baseDao.delete(student, student.getStudentID());
-                            Class c2 = baseDao.session.get(Class.class,student.getClassID());
+            case "delete": Student s1 = baseDao.session.get(Student.class,student.getStudentID());
+                            Class c2 = baseDao.session.get(Class.class,s1.getClassID());
+                            optionResult = baseDao.delete(student, student.getStudentID());
                             c2.setClassStuNum(c2.getClassStuNum()-1);
                             baseDao.updateObj(c2);break;
             case "search": List<Object> searchResults = search();
