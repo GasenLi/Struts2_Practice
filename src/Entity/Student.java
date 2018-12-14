@@ -5,6 +5,15 @@ public class Student {
     private String studentName;
     private int studentAge;
     private String studentID;
+    private Class theClass;
+
+    public Class getTheClass() {
+        return theClass;
+    }
+
+    public void setTheClass(Class theClass) {
+        this.theClass = theClass;
+    }
 
     public String getClassID() {
         return classID;

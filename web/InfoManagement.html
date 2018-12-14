@@ -226,7 +226,7 @@
                     classSearch();
                     search();
                 }else {
-                    showWrong("添加学生失败！");
+                    showWrong(d[0]['optionResult']);
                 }
             },
             error : function(d) {
@@ -267,18 +267,52 @@
     }
 
     //编辑班级
-    function editClass() {
+    function editClass(obj) {
+        var children = $(obj).parent().parent().children();
+        var oldClassID = children[0].innerHTML;
 
+        $(children[0]).html("<input size='10' value='"+ children[0].innerHTML +"' />");
+        $(children[2]).html("<button onclick='updateClass(this)'>确认</button> <button oldClassID='"+ oldClassID +"' onclick='classSearch()'>取消</button>");
+    }
+
+    //更新班级
+    function updateClass(obj) {
+        var children = $(obj).parent().parent().children();
+        var oldClassID = $($(children[2]).children()[1]).attr("oldClassID");
+
+        $.ajax({
+            type : "post",
+            url : '/SQ/ClassManage.action',
+            data : "option=update&classID=" + getInputValue(children[0]) + "&oldClassID=" + oldClassID,
+            dataType:"json",
+            success : function(d) {
+                console.log("成功",d);
+                checkIsLogged(d);
+
+                if(d[0]['optionResult'] == "true"){
+                    showCorrect("更新班级成功！");
+                    search();
+                    classSearch();
+                }else {
+                    showWrong(d[0]['optionResult']);
+                }
+            },
+            error : function(d) {
+                console.log("异常",d);
+                alert("异常"+JSON.stringify(d))
+            }
+        });
     }
 
     //编辑学生
     function editStudent(obj) {
         var children = $(obj).parent().parent().children();
+        var oldClassID = children[0].innerHTML;
 
         for(var i=0; i<children.length-1; i++){
             $(children[i]).html("<input size='7' value='"+ children[i].innerHTML +"' />");
         }
-        $(children[i]).html("<button onclick='updateStudent(this)'>确认</button> <button onclick='search()'>取消</button>");
+        $(children[i]).html("<button onclick='updateStudent(this)'>确认</button> <button oldClassID='"+ oldClassID +"' name='"+ $($(obj).parent().children()[1]).attr("name") +"' onclick='search()'>取消</button>");
     }
 
     //获取输入框里的值
@@ -289,11 +323,12 @@
     //更新学生
     function updateStudent(obj) {
         var children = $(obj).parent().parent().children();
+        var oldID = $($(children[4]).children()[1]).attr("name")
 
         $.ajax({
             type : "post",
             url : '/SQ/StudentManage.action',
-            data : "option=update&classID=" + getInputValue(children[0]) + "&studentID=" + getInputValue(children[1]) + "&studentName=" + getInputValue(children[2]) + "&studentAge=" + getInputValue(children[3]),
+            data : "option=update&classID=" + getInputValue(children[0]) + "&studentID=" + getInputValue(children[1]) + "&studentName=" + getInputValue(children[2]) + "&studentAge=" + getInputValue(children[3]) + "&oldStudentID=" + $($(children[4]).children()[1]).attr("name") + "&oldClassID=" + $($(children[4]).children()[1]).attr("oldClassID"),
             dataType:"json",
             success : function(d) {
                 console.log("成功",d);
@@ -302,8 +337,9 @@
                 if(d[0]['optionResult'] == "true"){
                     showCorrect("更新学生成功！");
                     search();
+                    classSearch();
                 }else {
-                    showWrong("更新学生失败！");
+                    showWrong(d[0]['optionResult']);
                 }
             },
             error : function(d) {
@@ -348,6 +384,7 @@
     }
 
     //班级查询
+    var classIDs ;
     function classSearch() {
         $.ajax({
             type : "post",
@@ -364,7 +401,7 @@
                 tbody.html("");
                 for(var i=0;i<d.length;i++){
                     tbody.append("<tr> <th class='tableLeft'>"+ d[i]['classID'] +"</th> <th class='tableLeft'>"+ d[i]['classStuNum'] +
-                        "</th> <th><button>编辑</button> <button onclick='classDelete(this)' name='"+ d[i]['classID'] +"'>删除</button></th> </tr>");
+                        "</th> <th><button onclick='editClass(this)'>编辑</button> <button onclick='classDelete(this)' name='"+ d[i]['classID'] +"'>删除</button></th> </tr>");
 
                     classIDs[i] = d[i]['classID'];
                 }
@@ -372,8 +409,10 @@
                 tbody.append("<tr> <th colspan='3'> 共"+ d.length +"个班</th> </tr>");
 
                 //更新班级菜单
-                updateClassMenu(classIDs)
-
+                if(this.classIDs != classIDs){
+                    this.classIDs = classIDs
+                    updateClassMenu(classIDs)
+                }
             },
             error : function(d) {
                 console.log("异常",d);

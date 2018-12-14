@@ -11,6 +11,10 @@
         <property name="classID" column="ClassID" type="string"/>
         <property name="studentAge" column="StudentAge" type="int"/>
         <property name="studentName" column="StudentName" type="string"/>
+
+        <!--&lt;!&ndash;多对一&ndash;&gt;-->
+        <!--<many-to-one name="theClass" column="ClassID" class="Entity.Class" />-->
+
     </class>
 </hibernate-mapping>
 

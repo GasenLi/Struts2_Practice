@@ -7,5 +7,12 @@
         </id>
 
         <property name="classStuNum" column="ClassStuNum" type="int"/>
+
+        <!--一对多-->
+        <set name="students" cascade="save-update" inverse="true">
+            <key column="classID"/>
+            <one-to-many class="Entity.Student"/>
+        </set>
+
     </class>
 </hibernate-mapping>
