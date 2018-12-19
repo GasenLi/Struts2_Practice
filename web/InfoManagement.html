@@ -391,6 +391,7 @@
             url : '/SQ/ClassManage.action',
             data : "option=search",
             dataType:"json",
+            async : false,
             success : function(d) {
                 console.log("成功",d);
                 checkIsLogged(d);
@@ -407,12 +408,13 @@
                 }
 
                 tbody.append("<tr> <th colspan='3'> 共"+ d.length +"个班</th> </tr>");
-
+                console.log("-------classIDs1: " + this.classIDs);
                 //更新班级菜单
                 if(this.classIDs != classIDs){
                     this.classIDs = classIDs
                     updateClassMenu(classIDs)
                 }
+                console.log("-------classIDs2: " + this.classIDs);
             },
             error : function(d) {
                 console.log("异常",d);
